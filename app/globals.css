@@ -19,6 +19,9 @@ input,select,textarea{background:transparent;border-bottom:1px solid #0E0E0E;pad
 .spice-spine.is-lit::after{opacity:1}
 .spice-img{transition:transform 1.1s ease;will-change:transform}
 .spice-spine.is-lit .spice-img{transform:scale(1.35)}
+.spice-spine::before{content:'';position:absolute;inset:0;z-index:3;background:#000;opacity:0;pointer-events:none}
+.spice-spine.is-blink::before{animation:spice-blink .9s steps(1,end) 1}
+@keyframes spice-blink{0%{opacity:1}18%{opacity:0}34%{opacity:1}52%{opacity:0}68%{opacity:1}100%{opacity:0}}
 .spice-sheen{position:absolute;inset:-40% -60%;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.9) 50%,transparent 62%);transform:translateX(-130%);pointer-events:none}
 .spice-spine.is-lit .spice-sheen{animation:spice-sheen 1.6s ease-in-out infinite}
 @keyframes spice-sheen{from{transform:translateX(-130%)}to{transform:translateX(130%)}}
@@ -34,4 +37,10 @@ input,select,textarea{background:transparent;border-bottom:1px solid #0E0E0E;pad
 .diner-pop{animation:diner-pop .45s cubic-bezier(.3,1.6,.5,1) both;transform-box:fill-box;transform-origin:center}
 .wiz-input{font-family:var(--serif);font-size:clamp(1.75rem,5vw,3.5rem);line-height:1.1;padding:12px 0;border-bottom-width:2px}
 .wiz-input::placeholder{color:#D9D6D0}
-@media (prefers-reduced-motion:reduce){.wiz-in-fwd,.wiz-in-back{animation:none}.diner-pop{animation:none}}
+/* Comensal que llega caminando desde afuera de la escena y se acomoda en su silla */
+@keyframes diner-walk{0%{opacity:0;transform:translate(var(--wx),var(--wy))}12%{opacity:1}85%,100%{opacity:1;transform:translate(0,0)}}
+@keyframes diner-waddle{0%,100%{transform:rotate(0)}25%{transform:rotate(-9deg)}75%{transform:rotate(9deg)}}
+@keyframes diner-sit{0%{transform:scale(1)}40%{transform:scale(1.2,.85)}100%{transform:scale(1)}}
+.diner-walk{animation:diner-walk 1s cubic-bezier(.35,.6,.4,1) both}
+.diner-body{transform-box:fill-box;transform-origin:center;animation:diner-waddle .24s ease-in-out 3,diner-sit .4s ease-out .86s}
+@media (prefers-reduced-motion:reduce){.wiz-in-fwd,.wiz-in-back{animation:none}}
