@@ -11,6 +11,8 @@ type Answers = {
   fecha: string // ISO yyyy-mm-dd o ''
   personas: number // 0 = sin definir
   mensaje: string
+  restricciones: string[] // opciones rápidas elegidas
+  restrNota: string // texto libre: alergias, detalles
 }
 
 type StepId = 'nombre' | 'contacto' | 'tipo' | 'fecha' | 'personas' | 'mensaje' | 'revisar'
@@ -25,8 +27,9 @@ const STEPS: {id: StepId; label: string; question: string; optional?: boolean}[]
   {id: 'revisar', label: 'REVISAR', question: 'Revisá y mandá.'},
 ]
 const LAST = STEPS.length - 1
+const RESTRICTIONS = ['Vegetariano', 'Vegano', 'Sin TACC', 'Sin lácteos', 'Frutos secos', 'Mariscos', 'Sin alcohol']
 const EVENT_TYPES = ['Private Dining', 'Event', 'Pop Up', 'Collaboration', 'Otro']
-const EMPTY: Answers = {nombre: '', contacto: '', tipo: '', fecha: '', personas: 0, mensaje: ''}
+const EMPTY: Answers = {nombre: '', contacto: '', tipo: '', fecha: '', personas: 0, mensaje: '', restricciones: [], restrNota: ''}
 const DRAFT_KEY = 'zeta-contacto'
 
 const isEmail = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)
@@ -43,6 +46,8 @@ function validate(id: StepId, a: Answers): string {
   if (id === 'tipo' && !a.tipo) return 'Elegí una opción.'
   return ''
 }
+
+const restrictionsText = (a: Answers) => [...a.restricciones, a.restrNota.trim()].filter(Boolean).join(', ')
 
 export default function ContactWizard() {
   const [step, setStep] = useState(0)
@@ -111,6 +116,7 @@ export default function ContactWizard() {
         fecha: a.fecha ? formatLongDate(a.fecha) : 'Sin definir',
         personas: a.personas ? String(a.personas) : 'Sin definir',
         mensaje: a.mensaje.trim(),
+        restricciones: restrictionsText(a) || 'Ninguna',
       }
       const response = await fetch('/api/contact', {method: 'POST', body: JSON.stringify(body)})
       if (response.ok) {
@@ -259,10 +265,47 @@ export default function ContactWizard() {
             value={a.mensaje}
             onChange={(e) => set('mensaje', e.target.value)}
             rows={5}
-            placeholder="Menú, ocasión, ideas, alergias… lo que quieras."
+            placeholder="Menú, ocasión, ideas… lo que quieras."
             aria-label="Mensaje"
             className="wiz-input max-w-3xl resize-none !text-2xl md:!text-3xl"
           />
+        )}
+
+        {current.id === 'mensaje' && (
+          <div className="mt-8 max-w-3xl">
+            <p className="meta text-g1 mb-1">RESTRICCIONES O ALERGIAS — OPCIONAL</p>
+            <p className="meta mb-3 text-[#E2573B]">Marcalas y las dejamos afuera del menú.</p>
+            <div className="flex flex-wrap gap-2 mb-4" role="group" aria-label="Restricciones alimentarias">
+              {RESTRICTIONS.map((r) => {
+                const on = a.restricciones.includes(r)
+                return (
+                  <button
+                    key={r}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() =>
+                      set('restricciones', on ? a.restricciones.filter((x) => x !== r) : [...a.restricciones, r])
+                    }
+                    className={`meta px-4 py-2 border rounded-full transition-colors duration-200 ${
+                      on
+                        ? 'bg-[#E2573B] border-[#E2573B] text-paper'
+                        : 'border-ink hover:border-[#E2573B] hover:text-[#E2573B]'
+                    }`}
+                  >
+                    {on ? '✕ ' : ''}
+                    {r}
+                  </button>
+                )
+              })}
+            </div>
+            <input
+              value={a.restrNota}
+              onChange={(e) => set('restrNota', e.target.value)}
+              placeholder="Alergias, intolerancias, algo que debamos saber…"
+              aria-label="Alergias y otras restricciones"
+              className="wiz-input !text-xl md:!text-2xl"
+            />
+          </div>
         )}
 
         {current.id === 'revisar' && (
@@ -275,6 +318,7 @@ export default function ContactWizard() {
                 ['fecha', 'FECHA', a.fecha ? formatLongDate(a.fecha) : ''],
                 ['personas', 'PERSONAS', a.personas ? String(a.personas) : ''],
                 ['mensaje', 'MENSAJE', a.mensaje],
+                ['restricciones', 'RESTRICCIONES', restrictionsText(a)],
               ] as const
             ).map(([id, label, value]) => (
               <div key={id} className="flex items-baseline gap-4 py-4">
@@ -282,7 +326,7 @@ export default function ContactWizard() {
                 <dd className="font-serif text-xl md:text-2xl flex-1 break-words">{value || <span className="text-g1">—</span>}</dd>
                 <button
                   type="button"
-                  onClick={() => go(STEPS.findIndex((s) => s.id === id))}
+                  onClick={() => go(STEPS.findIndex((s) => s.id === (id === 'restricciones' ? 'mensaje' : id)))}
                   className="meta underline underline-offset-4 hover:opacity-60"
                 >
                   EDITAR
