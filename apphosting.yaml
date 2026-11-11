@@ -1,0 +1,10 @@
+# Configuración de Firebase App Hosting (Next.js con rutas de API)
+runConfig:
+  cpu: 1
+  memoryMiB: 512
+  minInstances: 0
+  maxInstances: 1
+  concurrency: 80
+
+# Para enviar mails reales desde /api/contact, agregar RESEND_API_KEY (secret)
+# y CONTACT_TO. Sin ellos, la consulta solo se registra en el log (modo demo).

@@ -21,3 +21,9 @@ Thumbs.db
 
 # Vercel
 .vercel
+
+# material de trabajo pesado (fotos originales/procesadas)
+assets-src/especias/
+
+# Claude Code
+.claude/

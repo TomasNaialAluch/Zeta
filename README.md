@@ -282,9 +282,33 @@ El scroll lento al inicio y la transición de página **no** respetan la prefere
 
 ## Deploy
 
-Pensado para **[Vercel](https://vercel.com/)** (cero configuración), pero funciona en cualquier host que soporte Next.js 14 con App Router y Node 18+ (Netlify, Render, un VPS con `npm run build && npm run start`, etc.).
+### Firebase App Hosting (en uso)
 
-En Vercel: importar el repositorio, cargar `RESEND_API_KEY` y `CONTACT_TO` en *Settings → Environment Variables* y desplegar.
+El sitio está desplegado en **Firebase App Hosting** (necesita plan Blaze, pago por uso) porque Next.js tiene una ruta de API (`/api/contact`).
+
+- Proyecto: `zeta-web-41868` · Backend: `zeta` · Región: `us-central1`
+- URL: https://zeta--zeta-web-41868.us-central1.hosted.app
+- Archivos de configuración: [`firebase.json`](firebase.json), [`.firebaserc`](.firebaserc) y [`apphosting.yaml`](apphosting.yaml).
+- Presupuesto con alertas de 1 USD en la cuenta de facturación (es un demo).
+
+Para publicar cambios:
+
+```bash
+firebase login        # una sola vez
+firebase deploy --only apphosting --project zeta-web-41868
+```
+
+Sin `RESEND_API_KEY` ni `CONTACT_TO` el formulario de contacto no envía mails: solo registra la consulta en el log. Para activarlos: `firebase apphosting:secrets:set RESEND_API_KEY` y declararlos en `apphosting.yaml` (ver comentario en el archivo).
+
+### Otros hosts
+
+También funciona en Vercel (importar el repo y cargar las variables de entorno) o en cualquier host con Next.js 14 y Node 18+.
+
+---
+
+## Animaciones de especias (próximo desarrollo)
+
+Collage diagonal para el Hero, spinner ZETA con especias e intro con vórtice: ver [`README-ANIMACIONES.md`](README-ANIMACIONES.md), con el paso a paso y qué se hace en Photoshop, Illustrator y After Effects.
 
 ---
 
