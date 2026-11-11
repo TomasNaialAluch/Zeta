@@ -24,3 +24,14 @@ input,select,textarea{background:transparent;border-bottom:1px solid #0E0E0E;pad
 @keyframes spice-sheen{from{transform:translateX(-130%)}to{transform:translateX(130%)}}
 @media (max-width:768px){.spice-tilt{gap:3px;transform:rotate(-7deg)}}
 @media (prefers-reduced-motion:reduce){.spice-img,.spice-sheen{transition:none!important;animation:none!important}.spice-spine::after{transition:none!important}.spice-spine{transform:none!important;transition-property:opacity!important;transition-duration:1s!important}}
+
+/* ── Formulario de contacto por pasos ── */
+@keyframes wiz-fwd{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
+@keyframes wiz-back{from{opacity:0;transform:translateY(-28px)}to{opacity:1;transform:none}}
+.wiz-in-fwd{animation:wiz-fwd .7s cubic-bezier(.2,.8,.2,1) both}
+.wiz-in-back{animation:wiz-back .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes diner-pop{0%{transform:scale(0)}60%{transform:scale(1.3)}100%{transform:scale(1)}}
+.diner-pop{animation:diner-pop .45s cubic-bezier(.3,1.6,.5,1) both;transform-box:fill-box;transform-origin:center}
+.wiz-input{font-family:var(--serif);font-size:clamp(1.75rem,5vw,3.5rem);line-height:1.1;padding:12px 0;border-bottom-width:2px}
+.wiz-input::placeholder{color:#D9D6D0}
+@media (prefers-reduced-motion:reduce){.wiz-in-fwd,.wiz-in-back{animation:none}.diner-pop{animation:none}}

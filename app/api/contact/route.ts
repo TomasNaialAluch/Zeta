@@ -1,7 +1,10 @@
 const RESEND_URL = 'https://api.resend.com/emails'
 
 export async function POST(request: Request) {
-  const data = await request.json()
+  const data = await request.json().catch(() => null)
+  if (!data || !String(data.nombre ?? '').trim() || !String(data.contacto ?? '').trim()) {
+    return Response.json({ok: false, error: 'Faltan datos obligatorios'}, {status: 400})
+  }
   const apiKey = process.env.RESEND_API_KEY
   const to = process.env.CONTACT_TO
 

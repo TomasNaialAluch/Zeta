@@ -1,10 +1,12 @@
 import Link from 'next/link'
+import WorkDial from '@/components/home/WorkDial'
 import ProjectEntry from '@/components/projects/ProjectEntry'
 import {projects} from '@/content/projects'
 
 export default function SelectedWork() {
   return (
     <section id="work">
+      <WorkDial />
       <div className="px-5 md:px-10 pt-16 meta flex justify-between">
         <span>SELECTED WORK</span>
         <span>({projects.length})</span>

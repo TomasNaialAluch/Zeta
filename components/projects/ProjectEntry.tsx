@@ -14,7 +14,7 @@ export default function ProjectEntry({p, i}: {p: Project; i: number}) {
   const align = isOdd ? 'md:text-right' : ''
 
   return (
-    <Reveal className="px-5 md:px-10 py-14 md:py-24">
+    <Reveal id={`work-${p.slug}`} className="px-5 md:px-10 py-14 md:py-24">
       <Link href={`/work/${p.slug}`} className="group block">
         <div className="flex justify-between items-start mb-4">
           <ProjectMeta p={p} />
