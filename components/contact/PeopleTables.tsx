@@ -18,7 +18,7 @@ const MAX_PER_TABLE = 40
 const ROW = 190
 
 type Table = {x: number; y: number; w: number; h: number; rx: number}
-type Seat = {x: number; y: number}
+type Seat = {x: number; y: number; r: number} // r: rotación en grados (mira hacia la mesa)
 type Scene = {tables: Table[]; seats: Seat[]}
 
 /** Mesa redonda que se estira (estadio) y reparte los lugares por el perímetro. */
@@ -32,18 +32,24 @@ function stadium(n: number): Scene {
     const s = ((i + 0.5) * P) / n
     const arc = Math.PI * R
     let x: number, y: number
+    let dx: number, dy: number // hacia dónde está la mesa
     if (s < arc) {
       const a = -Math.PI / 2 + s / R
       ;[x, y] = [L / 2 + R * Math.cos(a), R * Math.sin(a)]
+      ;[dx, dy] = [-Math.cos(a), -Math.sin(a)]
     } else if (s < arc + L) {
       ;[x, y] = [L / 2 - (s - arc), R]
+      ;[dx, dy] = [0, -1]
     } else if (s < 2 * arc + L) {
       const a = Math.PI / 2 + (s - arc - L) / R
       ;[x, y] = [-L / 2 + R * Math.cos(a), R * Math.sin(a)]
+      ;[dx, dy] = [-Math.cos(a), -Math.sin(a)]
     } else {
       ;[x, y] = [-L / 2 + (s - 2 * arc - L), -R]
+      ;[dx, dy] = [0, 1]
     }
-    seats.push({x, y})
+    // El dibujo mira hacia +y: rotamos para que mire a la mesa.
+    seats.push({x, y, r: (Math.atan2(dy, dx) * 180) / Math.PI - 90})
   }
   return {tables: [{x: -(L + 2 * r) / 2, y: -r, w: L + 2 * r, h: 2 * r, rx: r}], seats}
 }
@@ -63,7 +69,7 @@ function rows(n: number): Scene {
     tables.push({x: -w / 2, y: cy - 28, w, h: 56, rx: 8})
     for (let j = 0; j < c; j++) {
       const top = j % 2 === 0
-      seats.push({x: -w / 2 + 8 + GAP / 2 + Math.floor(j / 2) * GAP, y: cy + (top ? -54 : 54)})
+      seats.push({x: -w / 2 + 8 + GAP / 2 + Math.floor(j / 2) * GAP, y: cy + (top ? -54 : 54), r: top ? 0 : 180})
     }
   }
   return {tables, seats}
@@ -73,15 +79,34 @@ function layout(n: number): Scene {
   return n <= 14 ? stadium(n) : rows(n)
 }
 
-const COLORS = ['#0E0E0E', '#8A8783', '#4A4744', '#B9B5AE', '#2B2926', '#6E6A65']
+const INK = '#0E0E0E'
 
-function Diner({color}: {color: string}) {
+/** Ícono "person" de Material Symbols / Material Icons (Google), licencia Apache 2.0. */
+const PERSON_PATH =
+  'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'
+
+/**
+ * Comensal con el ícono "person" de Google, una sola tinta. Mira hacia +y: el ícono va
+ * invertido (cabeza hacia la mesa) y el contenedor lo rota hacia el centro de la mesa.
+ */
+function Diner({wx, wy}: {wx: number; wy: number}) {
   return (
-    <g className="diner-pop">
-      <circle r={15} fill={color} />
-      <circle r={6} fill="#F4F1EB" opacity={0.9} />
+    <g className="diner-walk" style={{['--wx' as string]: `${wx}px`, ['--wy' as string]: `${wy}px`}}>
+      <g className="diner-body">
+        {/* respaldo de la silla */}
+        <path d="M-17 -19 Q0 -24 17 -19" fill="none" stroke={INK} strokeWidth={2.5} strokeLinecap="round" />
+        <path d={PERSON_PATH} fill={INK} transform="scale(1.75 -1.75) translate(-12 -11.5)" />
+      </g>
     </g>
   )
+}
+
+/** Punto de entrada: alternan izquierda/derecha, fuera de la mesa. Se pasa a coordenadas del asiento (que está rotado). */
+function entryOffset(i: number, rotation: number) {
+  const gx = i % 2 === 0 ? -340 : 340
+  const gy = 120
+  const a = (-rotation * Math.PI) / 180
+  return {wx: gx * Math.cos(a) - gy * Math.sin(a), wy: gx * Math.sin(a) + gy * Math.cos(a)}
 }
 
 export default function PeopleTables({value, onChange}: {value: number; onChange: (n: number) => void}) {
@@ -156,9 +181,12 @@ export default function PeopleTables({value, onChange}: {value: number; onChange
           {seats.map((s, i) => (
             <g
               key={i}
-              style={{transform: `translate(${s.x}px, ${s.y}px)`, transition: 'transform .6s cubic-bezier(.2,.8,.2,1)'}}
+              style={{
+                transform: `translate(${s.x}px, ${s.y}px) rotate(${s.r}deg)`,
+                transition: 'transform .6s cubic-bezier(.2,.8,.2,1)',
+              }}
             >
-              <Diner color={COLORS[i % COLORS.length]} />
+              <Diner {...entryOffset(i, s.r)} />
             </g>
           ))}
           {value === 0 && (

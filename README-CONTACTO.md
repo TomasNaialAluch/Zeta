@@ -2,7 +2,7 @@
 
 Hoy el contacto es un formulario clásico con todos los campos juntos ([ContactForm.tsx](components/contact/ContactForm.tsx)). La idea es reemplazarlo por una **experiencia paso a paso**: una pregunta por pantalla, con un input grande, una barra de progreso y recorrido tipo breadcrumb. Que completarlo dé gusto y la persona se explaye.
 
-> Estado: **implementado con placeholders**. El formulario por pasos funciona completo (`components/contact/ContactWizard.tsx`, `DatePicker.tsx`, `PeopleTables.tsx`). Comensales y mesas son formas simples en código; **falta reemplazarlos por el arte final de Illustrator** (sección 5.1). Pendiente además: animación al *sacar* comensales (hoy desaparecen de golpe) y pruebas en celular.
+> Estado: **implementado con placeholders**. El formulario por pasos funciona completo (`components/contact/ContactWizard.tsx`, `DatePicker.tsx`, `PeopleTables.tsx`). Comensales y mesas son formas simples en código; los comensales usan el **ícono "person" de Google (Material Icons, licencia Apache 2.0)** en una sola tinta, y llegan caminando a su silla (ver 5.2). El arte de Illustrator quedó como opción futura (sección 5.1). Pendiente además: animación al *sacar* comensales (hoy desaparecen de golpe) y pruebas en celular.
 
 ---
 
@@ -129,6 +129,20 @@ Lo que hay que producir son piezas sueltas en vector; las animaciones y la lógi
 - Sin efectos raster, sin degradados complejos, sin texto convertido ni máscaras innecesarias: hacen el SVG pesado y difícil de animar.
 - Exportar con **"Responsive"** activado y con ids/estilos limpios (Opciones SVG → ids de capas, estilos "presentation attributes").
 - Verificar la **licencia comercial** de la IA generativa de Illustrator (Adobe Firefly) y de cualquier recurso externo, ya que el sitio es comercial.
+
+### 5.2 Intento con la IA de Illustrator (resultado y decisión)
+
+Se probó "Generar vectores" de Illustrator 2025 (Firefly) para hacer mesas y comensales. Resultado:
+
+- La **mesa redonda con 8 sillas** salió con buena forma, pero con sillas muy detalladas y colores (celeste, naranja, gris).
+- El **comensal** salió con estilo "3D": brazos, manos, camisa naranja, y **la IA le agregó una mesa y una silla** que no se pidieron. No es la silueta minimalista que se busca.
+- La IA no respeta bien "monocromo", "sin fondo" ni "sin mesa/silla", aunque se pidan en el prompt. Habría que generar muchas variantes y limpiar a mano cada una.
+- Decisión: **se descartó por ahora** y se usa el ícono **"person" de Material Icons de Google** (Apache 2.0, uso comercial permitido) como comensal, más un respaldo de silla dibujado en código (`Diner` en `components/contact/PeopleTables.tsx`). Una sola tinta (`#0E0E0E`); cada comensal gira para mirar hacia la mesa.
+- **Animación:** cada comensal nuevo entra caminando desde afuera de la escena (alternando izquierda/derecha), con un leve balanceo, y al llegar se "sienta" con un pequeño achatado. Va en CSS (`diner-walk`, `diner-waddle`, `diner-sit` en `globals.css`). No se desactiva con "reducir movimiento" porque es una interacción pedida por el usuario y corta.
+
+**Si se retoma Illustrator**, conviene no usar Generar vectores para el comensal, sino dibujarlo a mano con formas básicas (círculo + elipse + arco para la silla) y exportarlo como SVG con ids. Si se usa la IA, probar con los ajustes **Tipo: Icon**, detalle mínimo y "Color y tono" en blanco y negro, y recolorear después con *Editar → Editar colores → Convertir a escala de grises*.
+
+---
 
 **Si no se llega a tiempo**: se puede arrancar con formas geométricas simples hechas en código (círculos y rectángulos) como placeholder, y reemplazarlas por el arte final cuando esté.
 
