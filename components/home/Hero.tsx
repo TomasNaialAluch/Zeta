@@ -1,14 +1,9 @@
-import Photo from '@/components/ui/Photo'
+import SpiceCollage from '@/components/home/SpiceCollage'
 
 export default function Hero() {
   return (
     <section className="relative h-[100svh] bg-ink text-paper flex flex-col justify-end px-5 md:px-10 pb-8">
-      <Photo
-        img={{kind: 'HERO IMAGE — SERVICE', ratio: '3/2', size: 'full'}}
-        fill
-        priority
-        className="opacity-40"
-      />
+      <SpiceCollage />
       <h1 className="relative">
         <span className="h-xl block">ZETA</span>
         <span className="relative font-serif text-[clamp(2.2rem,8vw,6rem)] leading-[.95] block mt-4">
