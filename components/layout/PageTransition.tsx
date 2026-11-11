@@ -18,7 +18,9 @@ const TURN_MS = 950
 const MAX_WAIT_MS = 4000 // por si la página nueva tarda en compilar
 // El video del spinner (ZETA con especias) se ve mientras la hoja tapa la página.
 // MIN_SHOW_MS = lo mínimo que se muestra, aunque la página nueva cargue al instante, para apreciarlo.
-const SPINNER_SRC = '/animaciones/zeta-spinner.mp4'
+// Hay varias animaciones; en cada cambio de página se usa una al azar (nunca la misma dos veces seguidas).
+// Se baja solo la próxima en segundo plano (~9 MB cada una), no todas juntas.
+const SPINNERS = [1, 2, 3, 4].map((n) => `/animaciones/zeta-spinner-${n}.mp4`)
 const MIN_SHOW_MS = 4000
 const SPINNER_RATE = 1.6 // el video dura 7,2 s; a 1,6x se ve casi entero en el mínimo
 const EASE_COVER = 'cubic-bezier(.77,0,.18,1)'
@@ -50,32 +52,33 @@ export default function PageTransition({children}: {children: React.ReactNode}) 
   const leaf = useRef<HTMLDivElement>(null)
   const shade = useRef<HTMLDivElement>(null)
   const video = useRef<HTMLVideoElement>(null)
+  const spinnerIdx = useRef(-1) // cuál se mostró/precargó última vez
 
   const busy = useRef(false)
   const pendingHref = useRef<string | null>(null)
   const currentPath = useRef(pathname)
   const revealNow = useRef<(() => void) | null>(null)
 
-  // Baja el video en segundo plano cuando el navegador está libre (pesa ~9 MB), sin frenar la carga.
-  useEffect(() => {
+  // Elige una animación al azar distinta de la anterior y la baja en segundo plano, sin frenar la página.
+  const preloadNext = useCallback(() => {
     const el = video.current
     if (!el) return
+    let next = Math.floor(Math.random() * SPINNERS.length)
+    if (next === spinnerIdx.current) next = (next + 1) % SPINNERS.length
+    spinnerIdx.current = next
     const load = () => {
-      el.src = SPINNER_SRC
+      el.src = SPINNERS[next]
       el.load()
     }
     // Safari no tiene requestIdleCallback: ahí se usa un timeout.
-    const w = window as Window & {
-      requestIdleCallback?: (cb: () => void, opts?: {timeout: number}) => number
-      cancelIdleCallback?: (id: number) => void
-    }
-    if (w.requestIdleCallback) {
-      const id = w.requestIdleCallback(load, {timeout: 4000})
-      return () => w.cancelIdleCallback?.(id)
-    }
-    const t = setTimeout(load, 2000)
-    return () => clearTimeout(t)
+    const w = window as Window & {requestIdleCallback?: (cb: () => void, opts?: {timeout: number}) => number}
+    if (w.requestIdleCallback) w.requestIdleCallback(load, {timeout: 4000})
+    else setTimeout(load, 1500)
   }, [])
+
+  useEffect(() => {
+    preloadNext()
+  }, [preloadNext])
 
   // Cuando la ruta cambió de verdad, se puede abrir la hoja.
   useEffect(() => {
@@ -98,12 +101,13 @@ export default function PageTransition({children}: {children: React.ReactNode}) 
     await turn.finished
     stage.current!.style.visibility = 'hidden'
     video.current?.pause()
+    preloadNext() // la próxima transición usa otra animación
     leafEl.getAnimations().forEach((a) => a.cancel())
     shadeEl.getAnimations().forEach((a) => a.cancel())
     busy.current = false
     pendingHref.current = null
     revealNow.current = null
-  }, [])
+  }, [preloadNext])
 
   const navigate = useCallback(
     async (href: string) => {
