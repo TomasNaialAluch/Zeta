@@ -35,3 +35,10 @@ assets-src/ae/chk-*.png
 assets-src/ae/*.aep_AME
 assets-src/ae/Guardado autom*/
 assets-src/ae/probe.jsx
+
+# Clips de IA: los finales viven en public/animaciones; los originales pesados no van al repo
+assets-src/ai-videos/*.mp4
+assets-src/ai-videos/*.wav
+assets-src/ai-videos/polvo-lleno.png
+assets-src/ae/zeta-variantes2.aep
+assets-src/ae/mux-audio.aep
