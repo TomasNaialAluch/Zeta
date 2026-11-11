@@ -2,6 +2,7 @@ import type {Metadata} from 'next'
 import {Instrument_Serif, Inter} from 'next/font/google'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import SmoothScroll from '@/components/layout/SmoothScroll'
 import PageTransition from '@/components/layout/PageTransition'
 import {site} from '@/content/site'
 import './globals.css'
@@ -33,6 +34,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
     <html lang="es" className={`${serif.variable} ${sans.variable}`}>
       <body className="font-sans">
+        <SmoothScroll />
         <PageTransition>
           <Header />
           {children}
