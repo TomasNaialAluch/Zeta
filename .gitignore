@@ -42,3 +42,8 @@ assets-src/ai-videos/*.wav
 assets-src/ai-videos/polvo-lleno.png
 assets-src/ae/zeta-variantes2.aep
 assets-src/ae/mux-audio.aep
+
+# Intro: originales y cuadros de trabajo
+assets-src/intro/*.mp4
+assets-src/intro/*.png
+assets-src/intro/*.jpg

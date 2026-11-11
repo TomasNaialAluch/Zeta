@@ -52,14 +52,28 @@ export default function SpiceCollage() {
   const nextLine = useRef(0) // a cuál de los 4 textos le toca el próximo color
 
   // Entrada: negro al cargar y, enseguida, los lomos aparecen de izquierda a derecha y quedan.
+  // Si la intro en video está en pantalla, se espera a que termine (evento `zeta:intro-done`).
   useEffect(() => {
-    // Con "reducir movimiento" la entrada sigue, pero solo como fundido (ver globals.css).
-    const t1 = window.setTimeout(() => {
-      lastMove.current = Date.now() + ENTRY_MS // el brillo solitario espera a que termine la entrada
-      setRevealed(true)
-    }, START_MS)
-    const t2 = window.setTimeout(() => setEntered(true), START_MS + ENTRY_MS)
+    let t1 = 0
+    let t2 = 0
+    const start = () => {
+      window.clearTimeout(t1)
+      window.removeEventListener('zeta:intro-done', start)
+      // Con "reducir movimiento" la entrada sigue, pero solo como fundido (ver globals.css).
+      t1 = window.setTimeout(() => {
+        lastMove.current = Date.now() + ENTRY_MS // el brillo solitario espera a que termine la entrada
+        setRevealed(true)
+      }, START_MS)
+      t2 = window.setTimeout(() => setEntered(true), START_MS + ENTRY_MS)
+    }
+    if (document.documentElement.dataset.intro === 'playing') {
+      window.addEventListener('zeta:intro-done', start, {once: true})
+      t1 = window.setTimeout(start, 30000) // tope de seguridad: nunca quedar en negro esperando
+    } else {
+      start()
+    }
     return () => {
+      window.removeEventListener('zeta:intro-done', start)
       window.clearTimeout(t1)
       window.clearTimeout(t2)
     }
