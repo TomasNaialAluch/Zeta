@@ -1,0 +1,23 @@
+# dependencias
+node_modules/
+
+# build de Next.js
+.next/
+out/
+
+# variables de entorno (usar .env.example como plantilla)
+.env
+.env.local
+.env.*.local
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# logs y sistema
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel

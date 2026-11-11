@@ -1,0 +1,8 @@
+@tailwind base;@tailwind components;@tailwind utilities;
+body{background:#F4F1EB;color:#0E0E0E;-webkit-font-smoothing:antialiased}
+.meta{font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;line-height:1.6}
+.h-xl{font-family:var(--serif);line-height:.9;letter-spacing:-.02em;font-size:clamp(3.5rem,14vw,12rem)}
+.rv{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none;transition:none}}
+input,select,textarea{background:transparent;border-bottom:1px solid #0E0E0E;padding:14px 0;width:100%;outline:none;border-radius:0;font-size:16px}

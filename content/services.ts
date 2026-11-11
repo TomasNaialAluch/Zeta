@@ -1,0 +1,1 @@
+export const services=[['PRIVATE DINING','Cenas diseñadas alrededor de una mesa, un espacio y las personas que la comparten.'],['EVENTS','Desde encuentros íntimos hasta servicios de gran volumen.'],['POP UPS','ZETA ocupando temporalmente otros espacios.'],['COLLABORATIONS','Cocina, marcas, artistas y proyectos con los que tenga sentido compartir mesa.']]
