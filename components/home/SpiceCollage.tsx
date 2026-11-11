@@ -27,6 +27,9 @@ const SPICES = [
 /** Alturas fijas (en %) para que parezcan lomos de libros de distinto tamaño. */
 const HEIGHTS = [82, 96, 74, 100, 88, 92, 70, 98, 84, 94, 76, 100, 86, 72, 96, 80, 90, 78]
 
+const START_MS = 600 // negro puro antes de empezar
+const STAGGER_MS = 130 // retraso entre lomo y lomo
+const ENTRY_MS = SPICES.length * STAGGER_MS + 1200
 const IDLE_MS = 1800 // sin mover el mouse, el brillo se pasea solo cada tanto
 
 /**
@@ -37,8 +40,23 @@ const IDLE_MS = 1800 // sin mover el mouse, el brillo se pasea solo cada tanto
 export default function SpiceCollage() {
   const root = useRef<HTMLDivElement>(null)
   const [revealed, setRevealed] = useState(false)
+  const [entered, setEntered] = useState(false) // terminó la entrada escalonada
   const [lit, setLit] = useState<number | null>(null)
   const lastMove = useRef(0)
+
+  // Entrada: negro al cargar y, enseguida, los lomos aparecen de izquierda a derecha y quedan.
+  useEffect(() => {
+    // Con "reducir movimiento" la entrada sigue, pero solo como fundido (ver globals.css).
+    const t1 = window.setTimeout(() => {
+      lastMove.current = Date.now() + ENTRY_MS // el brillo solitario espera a que termine la entrada
+      setRevealed(true)
+    }, START_MS)
+    const t2 = window.setTimeout(() => setEntered(true), START_MS + ENTRY_MS)
+    return () => {
+      window.clearTimeout(t1)
+      window.clearTimeout(t2)
+    }
+  }, [])
 
   // El collage escucha al <section> que lo contiene, porque el texto del Hero queda por encima.
   useEffect(() => {
@@ -46,7 +64,6 @@ export default function SpiceCollage() {
     if (!host) return
 
     const onMove = (e: PointerEvent) => {
-      setRevealed(true)
       lastMove.current = Date.now()
       const spine = document
         .elementsFromPoint(e.clientX, e.clientY)
@@ -91,7 +108,7 @@ export default function SpiceCollage() {
             key={name}
             data-spine={i}
             className={`spice-spine ${lit === i ? 'is-lit' : ''} ${lit !== null && lit !== i ? 'is-dim' : ''}`}
-            style={{height: `${HEIGHTS[i]}%`, transitionDelay: revealed ? `${i * 45}ms` : '0ms'}}
+            style={{height: `${HEIGHTS[i]}%`, transitionDelay: revealed && !entered ? `${i * STAGGER_MS}ms` : '0ms'}}
           >
             {revealed && (
               // Tiras ya recortadas y comprimidas (public/especias/lomos): livianas, sin pasar por el optimizador.
