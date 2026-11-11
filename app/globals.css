@@ -44,3 +44,7 @@ input,select,textarea{background:transparent;border-bottom:1px solid #0E0E0E;pad
 .diner-walk{animation:diner-walk 1s cubic-bezier(.35,.6,.4,1) both}
 .diner-body{transform-box:fill-box;transform-origin:center;animation:diner-waddle .24s ease-in-out 3,diner-sit .4s ease-out .86s}
 @media (prefers-reduced-motion:reduce){.wiz-in-fwd,.wiz-in-back{animation:none}}
+
+/* ── Pantalla de gracias: rectángulos de especias ── */
+.ty-tile{position:relative;overflow:hidden;background:#111;will-change:transform,filter}
+.ty-sheen{position:absolute;inset:-40% -60%;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.6) 50%,transparent 60%);transform:translateX(-130%);pointer-events:none}

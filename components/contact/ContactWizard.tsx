@@ -2,6 +2,7 @@
 import {useEffect, useRef, useState} from 'react'
 import DatePicker, {formatLongDate} from '@/components/contact/DatePicker'
 import PeopleTables from '@/components/contact/PeopleTables'
+import ThankYou from '@/components/contact/ThankYou'
 import {site} from '@/content/site'
 
 type Answers = {
@@ -136,18 +137,7 @@ export default function ContactWizard() {
     else next()
   }
 
-  if (status === 'ok') {
-    return (
-      <div className="wiz-in-fwd flex-1 flex flex-col justify-center">
-        <p className="meta text-g1 mb-4">LISTO</p>
-        <p className="font-serif text-5xl md:text-7xl leading-[0.95]">
-          Recibido, {a.nombre.trim().split(' ')[0]}.
-          <br />
-          <em>Te escribimos pronto.</em>
-        </p>
-      </div>
-    )
-  }
+  if (status === 'ok') return <ThankYou name={a.nombre.trim().split(' ')[0]} />
 
   const progress = (step / LAST) * 100
 
