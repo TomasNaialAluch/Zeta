@@ -27,3 +27,11 @@ assets-src/especias/
 
 # Claude Code
 .claude/
+
+# After Effects: temporales del script
+assets-src/ae/_*.txt
+assets-src/ae/frame-*.png
+assets-src/ae/chk-*.png
+assets-src/ae/*.aep_AME
+assets-src/ae/Guardado autom*/
+assets-src/ae/probe.jsx

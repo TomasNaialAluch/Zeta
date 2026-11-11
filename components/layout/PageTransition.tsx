@@ -3,10 +3,12 @@ import {createContext, useCallback, useContext, useEffect, useRef} from 'react'
 import {usePathname, useRouter} from 'next/navigation'
 import {navLinks} from '@/content/navigation'
 import {scrollToTop} from '@/lib/scrollToTop'
+import {jumpTo} from '@/lib/smoothScroll'
 
 /**
  * Transición entre páginas con efecto "hoja de revista":
- *  1. Una hoja de papel entra desde la derecha y tapa la página actual.
+ *  1. Una hoja de papel entra desde la derecha y tapa la página actual; sobre la hoja corre el
+ *     video del spinner (ZETA con especias), un mínimo de MIN_SHOW_MS para que se aprecie.
  *  2. Mientras está tapada, se cambia de ruta.
  *  3. La hoja se da vuelta sobre su lomo (izquierda) y revela la página nueva.
  */
@@ -14,6 +16,11 @@ import {scrollToTop} from '@/lib/scrollToTop'
 const COVER_MS = 650
 const TURN_MS = 950
 const MAX_WAIT_MS = 4000 // por si la página nueva tarda en compilar
+// El video del spinner (ZETA con especias) se ve mientras la hoja tapa la página.
+// MIN_SHOW_MS = lo mínimo que se muestra, aunque la página nueva cargue al instante, para apreciarlo.
+const SPINNER_SRC = '/animaciones/zeta-spinner.mp4'
+const MIN_SHOW_MS = 4000
+const SPINNER_RATE = 1.6 // el video dura 7,2 s; a 1,6x se ve casi entero en el mínimo
 const EASE_COVER = 'cubic-bezier(.77,0,.18,1)'
 const EASE_TURN = 'cubic-bezier(.65,0,.25,1)'
 
@@ -42,11 +49,33 @@ export default function PageTransition({children}: {children: React.ReactNode}) 
   const stage = useRef<HTMLDivElement>(null)
   const leaf = useRef<HTMLDivElement>(null)
   const shade = useRef<HTMLDivElement>(null)
+  const video = useRef<HTMLVideoElement>(null)
 
   const busy = useRef(false)
   const pendingHref = useRef<string | null>(null)
   const currentPath = useRef(pathname)
   const revealNow = useRef<(() => void) | null>(null)
+
+  // Baja el video en segundo plano cuando el navegador está libre (pesa ~9 MB), sin frenar la carga.
+  useEffect(() => {
+    const el = video.current
+    if (!el) return
+    const load = () => {
+      el.src = SPINNER_SRC
+      el.load()
+    }
+    // Safari no tiene requestIdleCallback: ahí se usa un timeout.
+    const w = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: {timeout: number}) => number
+      cancelIdleCallback?: (id: number) => void
+    }
+    if (w.requestIdleCallback) {
+      const id = w.requestIdleCallback(load, {timeout: 4000})
+      return () => w.cancelIdleCallback?.(id)
+    }
+    const t = setTimeout(load, 2000)
+    return () => clearTimeout(t)
+  }, [])
 
   // Cuando la ruta cambió de verdad, se puede abrir la hoja.
   useEffect(() => {
@@ -68,6 +97,7 @@ export default function PageTransition({children}: {children: React.ReactNode}) 
     shadeEl.animate([{opacity: 0}, {opacity: 1}], {duration: TURN_MS, easing: 'ease-in', fill: 'forwards'})
     await turn.finished
     stage.current!.style.visibility = 'hidden'
+    video.current?.pause()
     leafEl.getAnimations().forEach((a) => a.cancel())
     shadeEl.getAnimations().forEach((a) => a.cancel())
     busy.current = false
@@ -91,6 +121,14 @@ export default function PageTransition({children}: {children: React.ReactNode}) 
       const shadeEl = shade.current!
       stageEl.style.visibility = 'visible'
       stageEl.style.pointerEvents = 'auto'
+      // El video arranca desde el principio junto con la hoja.
+      const videoEl = video.current
+      const shownAt = performance.now()
+      if (videoEl) {
+        videoEl.currentTime = 0
+        videoEl.playbackRate = SPINNER_RATE
+        videoEl.play().catch(() => {})
+      }
       leafEl.style.transformOrigin = 'center'
       // La sombra y el degradé del pliegue se espejan según el lado del lomo.
       leafEl.style.boxShadow = `${-40 * direction}px 0 80px rgba(0,0,0,.28)`
@@ -109,7 +147,10 @@ export default function PageTransition({children}: {children: React.ReactNode}) 
       })
       router.push(href)
       await loaded
-      window.scrollTo(0, 0)
+      // Tiempo mínimo para que se aprecie el video, aunque la página ya esté lista.
+      const remaining = MIN_SHOW_MS - (performance.now() - shownAt)
+      if (remaining > 0) await new Promise((r) => setTimeout(r, remaining))
+      jumpTo(0)
       await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
 
       // 3) La hoja se da vuelta y revela la página nueva.
@@ -138,9 +179,15 @@ export default function PageTransition({children}: {children: React.ReactNode}) 
             boxShadow: '-40px 0 80px rgba(0,0,0,.28)',
           }}
         >
-          <span className="font-serif text-ink/10 text-[clamp(6rem,24vw,22rem)] leading-none select-none">
-            ZETA
-          </span>
+          <video
+            ref={video}
+            muted
+            playsInline
+            loop
+            preload="none"
+            tabIndex={-1}
+            className="absolute inset-0 h-full w-full object-contain pointer-events-none select-none"
+          />
           {/* Sombra de pliegue que se oscurece mientras la hoja se levanta. */}
           <div
             ref={shade}

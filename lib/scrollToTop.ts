@@ -1,3 +1,5 @@
+import {jumpTo} from '@/lib/smoothScroll'
+
 const DURATION_MS = 1400
 
 // Arranca suave, acelera y frena despacio al llegar (easeInOutCubic).
@@ -24,7 +26,7 @@ export function scrollToTop(duration = DURATION_MS) {
 
   const step = (now: number) => {
     const progress = Math.min((now - startTime) / duration, 1)
-    window.scrollTo(0, start * (1 - easeInOutCubic(progress)))
+    jumpTo(start * (1 - easeInOutCubic(progress)))
     if (progress < 1) frame = requestAnimationFrame(step)
     else stop()
   }
