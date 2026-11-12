@@ -26,6 +26,8 @@ const SPINNERS = [
   '/animaciones/zeta-ia-1-granos.mp4',
   '/animaciones/zeta-ia-2-remolino.mp4',
   '/animaciones/zeta-ia-3-polvo.mp4',
+  '/animaciones/zeta-ia-4-sal.mp4',
+  '/animaciones/zeta-ia-5-azucar.mp4',
 ]
 const MIN_SHOW_MS = 4000
 const SPINNER_RATE = 1.6 // el video dura 7,2 s; a 1,6x se ve casi entero en el mínimo
