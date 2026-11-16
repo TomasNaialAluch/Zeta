@@ -2,7 +2,7 @@
 import {createContext, useCallback, useContext, useEffect, useRef} from 'react'
 import {usePathname, useRouter} from 'next/navigation'
 import {navLinks} from '@/content/navigation'
-import {scrollToTop} from '@/lib/scrollToTop'
+import {scrollToSection, scrollToTop, sectionTop} from '@/lib/scrollToTop'
 import {jumpTo} from '@/lib/smoothScroll'
 
 /**
@@ -35,7 +35,7 @@ const EASE_COVER = 'cubic-bezier(.77,0,.18,1)'
 const EASE_TURN = 'cubic-bezier(.65,0,.25,1)'
 
 // Orden de las páginas, como en un índice de revista: Inicio, Trabajos, Sobre mí, Contacto.
-const PAGE_ORDER = ['/', ...navLinks.map((link) => link.href)]
+const PAGE_ORDER = ['/', ...navLinks.map((link) => link.href.split('#')[0]).filter((path) => path !== '/')]
 
 /** Posición de una ruta en la "revista". Un proyecto cuenta justo después de /work. */
 function pageRank(path: string): number {
@@ -138,10 +138,13 @@ export default function PageTransition({children}: {children: React.ReactNode}) 
   }, [preloadNext])
 
   const navigate = useCallback(
-    async (href: string) => {
+    async (target: string) => {
       if (busy.current) return
+      // Un destino puede traer ancla ("/#experience"): ruta + sección dentro de la página.
+      const [href, sectionId] = target.split('#')
       if (href === currentPath.current) {
-        scrollToTop()
+        if (sectionId) scrollToSection(sectionId)
+        else scrollToTop()
         return
       }
       busy.current = true
@@ -201,7 +204,8 @@ export default function PageTransition({children}: {children: React.ReactNode}) 
         })
       }
       skipNow.current = null
-      jumpTo(0)
+      // La hoja todavía tapa la página: se deja el scroll en la sección pedida (o arriba de todo).
+      jumpTo((sectionId && sectionTop(sectionId)) || 0)
       await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)))
 
       // 3) La hoja se da vuelta y revela la página nueva.
