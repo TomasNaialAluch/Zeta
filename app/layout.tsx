@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {default: `${site.title} | ${site.desc}`, template: '%s — ZETA'},
   description:
-    'Cocinamos para que algo suceda. Private Dining, Events, Pop Ups y Collaborations en Buenos Aires.',
+    'Cocinamos para que algo suceda. Cenas privadas, eventos, pop ups y colaboraciones en Buenos Aires.',
   openGraph: {
     title: site.title,
     description: site.desc,

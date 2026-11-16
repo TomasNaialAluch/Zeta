@@ -39,7 +39,7 @@ export default function Header() {
           onClick={() => setMenuOpen(!menuOpen)}
           aria-expanded={menuOpen}
         >
-          {menuOpen ? 'CLOSE' : 'MENU'}
+          {menuOpen ? 'CERRAR' : 'MENÚ'}
         </button>
       </header>
       {menuOpen && <MobileMenu onNavigate={closeMenu} />}

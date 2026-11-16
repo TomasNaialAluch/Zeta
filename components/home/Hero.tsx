@@ -15,7 +15,7 @@ export default function Hero() {
       <p className="relative font-serif italic text-2xl mt-6">Cocinamos para que algo suceda.</p>
       <div className="relative meta mt-4 flex flex-col md:flex-row md:justify-between gap-1">
         <span>Buenos Aires — Argentina</span>
-        <span>PRIVATE DINING / EVENTS / POP UPS / COLLABORATIONS</span>
+        <span>CENAS PRIVADAS / EVENTOS / POP UPS / COLABORACIONES</span>
       </div>
     </section>
   )

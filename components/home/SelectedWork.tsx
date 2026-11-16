@@ -8,7 +8,7 @@ export default function SelectedWork() {
     <section id="work">
       <WorkDial />
       <div className="px-5 md:px-10 pt-16 meta flex justify-between">
-        <span>SELECTED WORK</span>
+        <span>TRABAJOS SELECCIONADOS</span>
         <span>({projects.length})</span>
       </div>
       {projects.map((project, index) => (
@@ -16,7 +16,7 @@ export default function SelectedWork() {
       ))}
       <div className="px-5 md:px-10 pb-16">
         <Link href="/work" className="meta underline underline-offset-4">
-          VIEW ALL WORK →
+          VER TODOS LOS TRABAJOS →
         </Link>
       </div>
     </section>

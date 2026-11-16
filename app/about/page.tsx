@@ -18,7 +18,7 @@ export default function AboutPage() {
         </div>
         <div className="md:col-span-6 md:col-start-7">
           <Photo
-            img={{kind: 'PROCESS IMAGE — CHEF WORKING', ratio: '4/5', size: 'full'}}
+            img={{kind: 'IMAGEN DE PROCESO — EL COCINERO TRABAJANDO', ratio: '4/5', size: 'full'}}
             sizes="(min-width:768px) 50vw,100vw"
           />
         </div>

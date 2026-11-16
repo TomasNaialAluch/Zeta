@@ -40,7 +40,7 @@ export default function ProjectPage({params}: Params) {
       <ProjectGallery images={images} />
 
       <Link href={`/work/${next.slug}`} className="block px-5 md:px-10 py-24">
-        <span className="meta">NEXT PROJECT →</span>
+        <span className="meta">PRÓXIMO PROYECTO →</span>
         <span className="h-xl block mt-2">{next.title}</span>
       </Link>
     </main>

@@ -6,7 +6,7 @@ export const metadata = {title: 'Trabajos'}
 export default function WorkPage() {
   return (
     <main className="px-5 md:px-10 pt-28 pb-16">
-      <h1 className="h-xl mb-12">WORK</h1>
+      <h1 className="h-xl mb-12">TRABAJOS</h1>
       {projects.map((p) => (
         <Link
           key={p.slug}

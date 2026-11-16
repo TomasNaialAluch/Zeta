@@ -56,7 +56,7 @@ export default function Experience() {
   return (
     <section id="experience" className="px-5 md:px-10 py-10 md:py-16 border-t border-g2">
       <div className="meta flex justify-between mb-5 md:mb-8">
-        <span>THE EXPERIENCE</span>
+        <span>LA EXPERIENCIA</span>
         <span>({experienceVideos.length})</span>
       </div>
       <div

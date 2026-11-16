@@ -19,7 +19,7 @@ export default function ProjectEntry({p, i}: {p: Project; i: number}) {
         <div className="flex justify-between items-start mb-4">
           <ProjectMeta p={p} />
           <span className="meta hidden md:block opacity-0 group-hover:opacity-100 transition-opacity">
-            VIEW →
+            VER →
           </span>
         </div>
 

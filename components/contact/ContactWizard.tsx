@@ -29,7 +29,7 @@ const STEPS: {id: StepId; label: string; question: string; optional?: boolean}[]
 ]
 const LAST = STEPS.length - 1
 const RESTRICTIONS = ['Vegetariano', 'Vegano', 'Sin TACC', 'Sin lácteos', 'Frutos secos', 'Mariscos', 'Sin alcohol']
-const EVENT_TYPES = ['Private Dining', 'Event', 'Pop Up', 'Collaboration', 'Otro']
+const EVENT_TYPES = ['Cena privada', 'Evento', 'Pop Up', 'Colaboración', 'Otro']
 const EMPTY: Answers = {nombre: '', contacto: '', tipo: '', fecha: '', personas: 0, mensaje: '', restricciones: [], restrNota: ''}
 const DRAFT_KEY = 'zeta-contacto'
 
